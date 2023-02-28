@@ -2,6 +2,8 @@ import json
 import requests
 import pandas
 import time
+import art
+from colorama import Fore, Back, Style
 
 delay = 1 # seconds to wait for yougetsignal to respond
 base_url = "https://domains.yougetsignal.com/domains.php"
@@ -11,6 +13,16 @@ headers = {
     "Referer": "https://www.yougetsignal.com/",
     "Origin": "https://www.yougetsignal.com"
 }
+def format_text(title,item, log=0):
+    if log==1:
+        text = Style.BRIGHT + Fore.RED + " [-] " + Fore.RESET + Fore.YELLOW + title + Fore.RESET + Fore.BLUE + item + Fore.RESET
+    else:
+        cr = '\r\n'
+        section_break=cr + '*'*20 + cr 
+        item=str(item)
+        text= Style.BRIGHT+ Fore.RED + title + Fore.RESET + Fore.YELLOW +section_break + Fore.BLUE + item + Fore.YELLOW + section_break + Fore.RESET
+    return text
+
 def reverse_ip_lookup(ip):
     params = {
         "remoteAddress": ip
@@ -39,21 +51,26 @@ def list_to_excel(domain_list):
     df.to_excel("domains.xlsx", index=False)
 
 def main():
-    
+    banner = art.text2art("IPReverser",font='slant') + "\n\t\t\t- by Ishan Saha"
+    print(format_text(banner,"Add the IP in the target.txt file"))
     all_domains = []
     try:
         ip_list = ip_loader()
+        print(format_text("Note: ","targets selected!",1))
         for ip in ip_list:
             time.sleep(delay)
             response_json = reverse_ip_lookup(ip)
             domain_list = get_domain_list(response_json)
+            print(format_text("Data Extracted for "+str(ip)+": ",str(domain_list),1))
             all_domains.extend(domain_list)
         list_to_excel(all_domains)
+        print()
+        print(format_text('Note: ','Adding extracted information to excel!',1))
     except KeyboardInterrupt:
-        print("\n\n[!] Exiting...")
+        print(format_text("Note: ","User Interupted! Exiting!",1))
         exit()
     except Exception as e:
-        print(e)    
+        print(format_text(e,''))    
 
 if "__main__" == __name__:
     main()
