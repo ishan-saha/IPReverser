@@ -7,7 +7,7 @@ usage:
  - run the main.py 
  - check the domains.xlsx for results
  
- ### Note: this might take time as the Ypugetsignal api takes time
+ ### Note: this might take time as the Yougetsignal api takes time
  ```
  
  
